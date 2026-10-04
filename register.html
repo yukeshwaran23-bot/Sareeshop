@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account - Varnam Silks</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #321039;
+            color: #ffffff;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+
+        .register-container {
+            width: 100%;
+            max-width: 390px;
+
+            background: #fffbf7;
+
+            border-radius: 18px;
+
+            padding: 30px 24px;
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.35);
+        }
+
+
+        .logo {
+            text-align: center;
+
+            color: #321039;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .tagline {
+            text-align: center;
+
+            color: #777;
+
+            font-size: 11px;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .title {
+            color: #321039;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+
+        .subtitle {
+            color: #777;
+
+            font-size: 13px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+
+        .form-group label {
+            display: block;
+
+            color: #321039;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+
+        .form-group input {
+            width: 100%;
+
+            height: 46px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 9px;
+
+            padding: 0 14px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            background: #ffffff;
+        }
+
+
+        .form-group input:focus {
+            border-color: #d7a849;
+
+            box-shadow:
+                0 0 0 2px rgba(215, 168, 73, 0.15);
+        }
+
+
+        .register-btn {
+            width: 100%;
+
+            height: 50px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #d7a849;
+
+            color: #321039;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+        }
+
+
+        .register-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        .register-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+
+        .message {
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 11px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+
+        .message.error {
+            display: block;
+
+            background: #ffe7e7;
+
+            color: #a00000;
+        }
+
+
+        .message.success {
+            display: block;
+
+            background: #e5f7e9;
+
+            color: #176b2c;
+        }
+
+
+        .login-text {
+            text-align: center;
+
+            color: #777;
+
+            font-size: 13px;
+
+            margin-top: 22px;
+        }
+
+
+        .login-link {
+            color: #5b176d;
+
+            font-weight: bold;
+
+            text-decoration: none;
+        }
+
+
+        .back-link {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 17px;
+
+            color: #777;
+
+            font-size: 12px;
+
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="register-container">
+
+
+        <div class="logo">
+            VARNAM SILKS
+        </div>
+
+
+        <div class="tagline">
+            SAREES THAT SPEAK ELEGANCE
+        </div>
+
+
+        <div class="title">
+            Create Account
+        </div>
+
+
+        <div class="subtitle">
+            Create your Varnam Silks customer account
+        </div>
+
+
+        <form id="registerForm">
+
+
+            <div class="form-group">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="Enter phone number"
+                    maxlength="15"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter email address"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="address">
+                    Address
+                </label>
+
+                <input
+                    type="text"
+                    id="address"
+                    placeholder="Enter your address"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Minimum 6 characters"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Re-enter password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="register-btn"
+                id="registerBtn"
+            >
+                CREATE ACCOUNT
+            </button>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+        </form>
+
+
+        <div class="login-text">
+
+            Already have an account?
+
+            <a
+                href="login.html"
+                class="login-link"
+            >
+                Login
+            </a>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="back-link"
+        >
+            ← Back to Varnam Silks
+        </a>
+
+
+    </div>
+
+
+    <script>
+
+
+        const API_URL =
+            "http://localhost:5000";
+
+
+        const registerForm =
+            document.getElementById(
+                "registerForm"
+            );
+
+
+        const registerBtn =
+            document.getElementById(
+                "registerBtn"
+            );
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        registerForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    document
+                        .getElementById("name")
+                        .value
+                        .trim();
+
+
+                const phone =
+                    document
+                        .getElementById("phone")
+                        .value
+                        .trim();
+
+
+                const email =
+                    document
+                        .getElementById("email")
+                        .value
+                        .trim();
+
+
+                const address =
+                    document
+                        .getElementById("address")
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .getElementById("password")
+                        .value;
+
+
+                const confirmPassword =
+                    document
+                        .getElementById("confirmPassword")
+                        .value;
+
+
+                message.className =
+                    "message";
+
+
+                message.textContent =
+                    "";
+
+
+                if (password.length < 6) {
+
+                    message.className =
+                        "message error";
+
+                    message.textContent =
+                        "Password must be at least 6 characters.";
+
+                    return;
+
+                }
+
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    message.className =
+                        "message error";
+
+                    message.textContent =
+                        "Passwords do not match.";
+
+                    return;
+
+                }
+
+
+                registerBtn.disabled =
+                    true;
+
+
+                registerBtn.textContent =
+                    "CREATING ACCOUNT...";
+
+
+                try {
+
+
+                    const response =
+                        await fetch(
+                            API_URL +
+                            "/api/customer/register",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        name:
+                                            name,
+
+                                        phone:
+                                            phone,
+
+                                        email:
+                                            email,
+
+                                        password:
+                                            password,
+
+                                        address:
+                                            address
+
+                                    })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Registration failed"
+                        );
+
+                    }
+
+
+                    /* -----------------------------
+                       SAVE CUSTOMER LOGIN
+                    ----------------------------- */
+
+                    localStorage.setItem(
+                        "varnamCustomerToken",
+                        data.token
+                    );
+
+
+                    localStorage.setItem(
+                        "varnamCustomer",
+                        JSON.stringify(
+                            data.user
+                        )
+                    );
+
+
+                    message.className =
+                        "message success";
+
+
+                    message.textContent =
+                        "Account created successfully!";
+
+
+                    /* -----------------------------
+                       GO HOME
+                    ----------------------------- */
+
+                    setTimeout(
+                        function() {
+
+                            window.location.href =
+                                "index.html";
+
+                        },
+                        800
+                    );
+
+
+                } catch (error) {
+
+
+                    console.error(
+                        "Customer registration error:",
+                        error
+                    );
+
+
+                    message.className =
+                        "message error";
+
+
+                    message.textContent =
+                        error.message ||
+                        "Unable to create account.";
+
+
+                } finally {
+
+
+                    registerBtn.disabled =
+                        false;
+
+
+                    registerBtn.textContent =
+                        "CREATE ACCOUNT";
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>
