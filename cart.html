@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Shopping Cart | Varnam Silks</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        /* ==============================
+           CART PAGE
+           ============================== */
+
+        .cart-page {
+            max-width: 1100px;
+            margin: auto;
+            padding: 25px 16px 60px;
+        }
+
+        .cart-title {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .cart-title p {
+            color: var(--gold);
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 7px;
+        }
+
+        .cart-title h1 {
+            color: var(--maroon);
+            font-size: 30px;
+            font-weight: 500;
+        }
+
+        /* ==============================
+           CART CONTENT
+           ============================== */
+
+        .cart-page-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ==============================
+           CART PRODUCT
+           ============================== */
+
+        .cart-product {
+            display: flex;
+            gap: 13px;
+            padding: 12px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+        }
+
+        .cart-product-image {
+            width: 85px;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: var(--cream-dark);
+            flex-shrink: 0;
+        }
+
+        .cart-product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-product-name {
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.3;
+            margin-bottom: 5px;
+        }
+
+        .cart-product-type {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin-bottom: 7px;
+        }
+
+        .cart-product-price {
+            color: var(--maroon);
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* ==============================
+           QUANTITY
+           ============================== */
+
+        .cart-quantity {
+            display: flex;
+            align-items: center;
+            width: 105px;
+            height: 34px;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .cart-quantity button {
+            width: 34px;
+            height: 100%;
+            border: none;
+            background: var(--cream);
+            color: var(--maroon);
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .cart-quantity span {
+            flex: 1;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        /* ==============================
+           REMOVE
+           ============================== */
+
+        .cart-remove {
+            border: none;
+            background: transparent;
+            color: #987979;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .cart-remove:hover {
+            color: var(--maroon);
+        }
+
+        /* ==============================
+           ITEM TOTAL
+           ============================== */
+
+        .cart-product-total {
+            color: var(--maroon);
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ==============================
+           EMPTY CART
+           ============================== */
+
+        .cart-page-empty {
+            text-align: center;
+            padding: 70px 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+        }
+
+        .cart-page-empty h2 {
+            color: var(--maroon);
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .cart-page-empty p {
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin-bottom: 22px;
+        }
+
+        .continue-shopping {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+            padding: 0 22px;
+            background: var(--maroon);
+            color: var(--white);
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* ==============================
+           ORDER SUMMARY
+           ============================== */
+
+        .order-summary {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+        }
+
+        .order-summary h2 {
+            color: var(--maroon);
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .summary-row span:first-child {
+            color: var(--muted);
+        }
+
+        .summary-row span:last-child {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 18px;
+            color: var(--maroon);
+            font-family: Arial, sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .checkout-page-btn {
+            width: 100%;
+            height: 48px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 3px;
+            background: var(--maroon);
+            color: var(--white);
+            font-size: 13px;
+            letter-spacing: .5px;
+            cursor: pointer;
+        }
+
+        .checkout-page-btn:hover {
+            background: var(--dark-maroon);
+        }
+
+        /* ==============================
+           DESKTOP
+           ============================== */
+
+        @media (min-width: 700px) {
+
+            .cart-page {
+                padding: 45px 25px 80px;
+            }
+
+            .cart-title h1 {
+                font-size: 38px;
+            }
+
+            .cart-product {
+                padding: 15px;
+            }
+
+            .cart-product-image {
+                width: 105px;
+                height: 130px;
+            }
+
+            .cart-product-name {
+                font-size: 16px;
+            }
+
+            .order-summary {
+                max-width: 500px;
+                margin-left: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         TOPBAR
+         ========================================== -->
+
+    <header class="topbar">
+
+        <button
+            class="icon-btn"
+            onclick="history.back()"
+        >
+            ←
+        </button>
+
+
+        <div class="brand">
+
+            <div class="brand-name">
+                VARNAM SILKS
+            </div>
+
+            <div class="brand-tagline">
+                SAREES THAT SPEAK ELEGANCE
+            </div>
+
+        </div>
+
+
+        <div style="width:40px;"></div>
+
+    </header>
+
+
+    <!-- ==========================================
+         CART PAGE
+         ========================================== -->
+
+    <main class="cart-page">
+
+
+        <div class="cart-title">
+
+            <p>
+                YOUR SHOPPING BAG
+            </p>
+
+            <h1>
+                Shopping Cart
+            </h1>
+
+        </div>
+
+
+        <!-- CART ITEMS -->
+
+        <div
+            class="cart-page-items"
+            id="cartPageItems"
+        >
+
+            <!-- JavaScript will add products -->
+
+        </div>
+
+
+        <!-- ORDER SUMMARY -->
+
+        <div
+            class="order-summary"
+            id="orderSummary"
+        >
+
+            <h2>
+                Order Summary
+            </h2>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Items
+                </span>
+
+                <span id="summaryItems">
+                    0
+                </span>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <span id="summarySubtotal">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Delivery
+                </span>
+
+                <span id="summaryDelivery">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <div class="summary-total">
+
+                <span>
+                    Total
+                </span>
+
+                <span id="summaryTotal">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <button
+                class="checkout-page-btn"
+                id="checkoutPageBtn"
+            >
+                Proceed to Checkout
+            </button>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- ==========================================
+         PART 2 STARTS WITH JAVASCRIPT
+         ========================================== -->
+      <script>
+
+    /* ==========================================
+       API SETTINGS
+       ========================================== */
+
+    const API_URL =
+        "https://varnam-silks-backend-4.onrender.com";
+
+    const CUSTOMER_TOKEN_KEY =
+        "varnamCustomerToken";
+
+
+    /* ==========================================
+       ELEMENTS
+       ========================================== */
+
+    const cartPageItems =
+        document.getElementById("cartPageItems");
+
+    const orderSummary =
+        document.getElementById("orderSummary");
+
+    const summaryItems =
+        document.getElementById("summaryItems");
+
+    const summarySubtotal =
+        document.getElementById("summarySubtotal");
+
+    const summaryDelivery =
+        document.getElementById("summaryDelivery");
+
+    const summaryTotal =
+        document.getElementById("summaryTotal");
+
+    const checkoutPageBtn =
+        document.getElementById("checkoutPageBtn");
+
+
+    /* ==========================================
+       CUSTOMER TOKEN
+       ========================================== */
+
+    function getCustomerToken() {
+
+        return localStorage.getItem(
+            CUSTOMER_TOKEN_KEY
+        );
+
+    }
+
+
+    /* ==========================================
+       GUEST CART
+       ========================================== */
+
+    function getGuestCart() {
+
+        try {
+
+            const savedCart =
+                localStorage.getItem(
+                    "varnamCart"
+                );
+
+            if (!savedCart) {
+                return [];
+            }
+
+            return JSON.parse(savedCart);
+
+        } catch (error) {
+
+            console.log(
+                "Guest cart loading error:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+
+    function saveGuestCart(cart) {
+
+        localStorage.setItem(
+            "varnamCart",
+            JSON.stringify(cart)
+        );
+
+    }
+
+
+    /* ==========================================
+       GET PRODUCTS
+       ========================================== */
+
+    async function getProducts() {
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL +
+                    "/api/products"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Products API failed"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (Array.isArray(data)) {
+
+                return data;
+
+            }
+
+
+            if (
+                data.products &&
+                Array.isArray(data.products)
+            ) {
+
+                return data.products;
+
+            }
+
+
+            return [];
+
+        } catch (error) {
+
+            console.log(
+                "Products loading error:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+
+    /* ==========================================
+       GET CUSTOMER CART
+       ========================================== */
+
+    async function getCustomerCart() {
+
+        const token =
+            getCustomerToken();
+
+
+        /* Guest */
+
+        if (!token) {
+
+            return getGuestCart();
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL +
+                    "/api/customer/cart",
+                    {
+                        method: "GET",
+
+                        headers: {
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        }
+
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Customer cart API failed"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const databaseCart =
+                data.cart || [];
+
+
+            /*
+             * Get full product details
+             */
+
+            const products =
+                await getProducts();
+
+
+            const finalCart = [];
+
+
+            databaseCart.forEach(
+                function(dbItem) {
+
+                    const product =
+                        products.find(
+                            function(product) {
+
+                                return Number(
+                                    product.id
+                                ) === Number(
+                                    dbItem.productId
+                                );
+
+                            }
+                        );
+
+
+                    if (!product) {
+
+                        return;
+
+                    }
+
+
+                    finalCart.push({
+
+                        id:
+                            product.id,
+
+                        name:
+                            product.name,
+
+                        price:
+                            Number(
+                                product.price
+                            ) || 0,
+
+                        image:
+                            product.image || "",
+
+                        category:
+                            product.category ||
+                            "Saree",
+
+                        quantity:
+                            Number(
+                                dbItem.quantity
+                            ) || 1
+
+                    });
+
+                }
+            );
+
+
+            return finalCart;
+
+
+        } catch (error) {
+
+            console.log(
+                "Customer cart loading error:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+
+    /* ==========================================
+       SAVE CUSTOMER CART
+       ========================================== */
+
+    async function saveCustomerCart(cart) {
+
+        const token =
+            getCustomerToken();
+
+
+        /* Guest */
+
+        if (!token) {
+
+            saveGuestCart(cart);
+
+            return true;
+
+        }
+
+
+        try {
+
+            const cleanCart =
+                cart.map(
+                    function(item) {
+
+                        return {
+
+                            productId:
+                                Number(
+                                    item.id
+                                ),
+
+                            quantity:
+                                Number(
+                                    item.quantity
+                                ) || 1
+
+                        };
+
+                    }
+                );
+
+
+            const response =
+                await fetch(
+                    API_URL +
+                    "/api/customer/cart",
+                    {
+                        method: "PUT",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        },
+
+                        body:
+                            JSON.stringify({
+                                cart:
+                                    cleanCart
+                            })
+
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Customer cart save failed"
+                );
+
+            }
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.log(
+                "Customer cart save error:",
+                error
+            );
+
+            alert(
+                "Unable to save cart. Please try again."
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    /* ==========================================
+       DISPLAY CART
+       ========================================== */
+
+    async function displayCartPage() {
+
+        cartPageItems.innerHTML = `
+
+            <div class="cart-page-empty">
+
+                <h2>
+                    Loading Cart...
+                </h2>
+
+                <p>
+                    Please wait.
+                </p>
+
+            </div>
+
+        `;
+
+
+        const cart =
+            await getCustomerCart();
+
+
+        cartPageItems.innerHTML = "";
+
+
+        /* EMPTY CART */
+
+        if (cart.length === 0) {
+
+            cartPageItems.innerHTML = `
+
+                <div class="cart-page-empty">
+
+                    <h2>
+                        Your Cart is Empty
+                    </h2>
+
+                    <p>
+                        Add some beautiful sarees
+                        to your shopping bag.
+                    </p>
+
+                    <a
+                        href="index.html"
+                        class="continue-shopping"
+                    >
+                        Continue Shopping
+                    </a>
+
+                </div>
+
+            `;
+
+
+            orderSummary.style.display =
+                "none";
+
+
+            return;
+
+        }
+
+
+        orderSummary.style.display =
+            "block";
+
+
+        let subtotal = 0;
+
+        let totalItems = 0;
+
+
+        /* CART PRODUCTS */
+
+        cart.forEach(
+            function(item, index) {
+
+                const quantity =
+                    Number(
+                        item.quantity
+                    ) || 1;
+
+
+                const price =
+                    Number(
+                        item.price
+                    ) || 0;
+
+
+                const itemTotal =
+                    price * quantity;
+
+
+                subtotal += itemTotal;
+
+                totalItems += quantity;
+
+
+                const itemElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                itemElement.className =
+                    "cart-product";
+
+
+                itemElement.innerHTML = `
+
+                    <img
+                        src="${item.image || ""}"
+                        alt="${item.name || "Saree"}"
+                        class="cart-product-image"
+                    >
+
+
+                    <div class="cart-product-info">
+
+                        <div class="cart-product-name">
+                            ${item.name || "Saree"}
+                        </div>
+
+
+                        <div class="cart-product-type">
+                            ${item.category || "Saree"}
+                        </div>
+
+
+                        <div class="cart-product-price">
+                            ₹${price.toLocaleString("en-IN")}
+                        </div>
+
+
+                        <div class="cart-quantity">
+
+                            <button
+                                type="button"
+                                onclick="changeCartQuantity(
+                                    ${index},
+                                    -1
+                                )"
+                            >
+                                −
+                            </button>
+
+
+                            <span>
+                                ${quantity}
+                            </span>
+
+
+                            <button
+                                type="button"
+                                onclick="changeCartQuantity(
+                                    ${index},
+                                    1
+                                )"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="cart-remove"
+                            onclick="removeCartItem(
+                                ${index}
+                            )"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+
+                    <div class="cart-product-total">
+
+                        ₹${itemTotal.toLocaleString("en-IN")}
+
+                    </div>
+
+                `;
+
+
+                cartPageItems.appendChild(
+                    itemElement
+                );
+
+            }
+        );
+
+
+        /* ==========================================
+           DELIVERY
+           ========================================== */
+
+        let delivery = 0;
+
+
+        if (
+            subtotal > 0 &&
+            subtotal < 1000
+        ) {
+
+            delivery = 80;
+
+        }
+
+
+        const total =
+            subtotal + delivery;
+
+
+        /* ==========================================
+           SUMMARY
+           ========================================== */
+
+        summaryItems.textContent =
+            totalItems;
+
+
+        summarySubtotal.textContent =
+            "₹" +
+            subtotal.toLocaleString(
+                "en-IN"
+            );
+
+
+        summaryDelivery.textContent =
+            delivery === 0
+                ? "FREE"
+                : "₹" +
+                  delivery.toLocaleString(
+                      "en-IN"
+                  );
+
+
+        summaryTotal.textContent =
+            "₹" +
+            total.toLocaleString(
+                "en-IN"
+            );
+
+    }
+
+
+    /* ==========================================
+       CHANGE QUANTITY
+       ========================================== */
+
+    async function changeCartQuantity(
+        index,
+        change
+    ) {
+
+        const cart =
+            await getCustomerCart();
+
+
+        if (!cart[index]) {
+
+            return;
+
+        }
+
+
+        let quantity =
+            Number(
+                cart[index].quantity
+            ) || 1;
+
+
+        quantity += change;
+
+
+        if (quantity <= 0) {
+
+            cart.splice(
+                index,
+                1
+            );
+
+        } else {
+
+            cart[index].quantity =
+                quantity;
+
+        }
+
+
+        const saved =
+            await saveCustomerCart(
+                cart
+            );
+
+
+        if (saved) {
+
+            await displayCartPage();
+
+        }
+
+    }
+
+
+    /* ==========================================
+       REMOVE ITEM
+       ========================================== */
+
+    async function removeCartItem(index) {
+
+        const cart =
+            await getCustomerCart();
+
+
+        if (!cart[index]) {
+
+            return;
+
+        }
+
+
+        cart.splice(
+            index,
+            1
+        );
+
+
+        const saved =
+            await saveCustomerCart(
+                cart
+            );
+
+
+        if (saved) {
+
+            await displayCartPage();
+
+        }
+
+    }
+
+
+    /* ==========================================
+       CHECKOUT
+       ========================================== */
+
+    checkoutPageBtn.addEventListener(
+        "click",
+        async function() {
+
+            const cart =
+                await getCustomerCart();
+
+
+            if (cart.length === 0) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Temporary compatibility
+             * for checkout.html.
+             *
+             * We will migrate checkout.html
+             * next.
+             */
+
+            saveGuestCart(cart);
+
+
+            window.location.href =
+                "checkout.html";
+
+        }
+    );
+
+
+    /* ==========================================
+       START CART PAGE
+       ========================================== */
+
+    displayCartPage();
+
+    </script>
+
+
+</body>
+
+</html>
