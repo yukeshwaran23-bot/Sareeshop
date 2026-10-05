@@ -1,0 +1,1400 @@
+/* =====================================================
+   VARNAM SILKS
+   MAIN JAVASCRIPT
+   ===================================================== */
+
+
+/* =====================================================
+   PRODUCT DATA
+   ===================================================== */
+
+let products = [];
+
+
+/* =====================================================
+   LOAD ADMIN PRODUCTS
+   ===================================================== */
+/* =====================================================
+   LOAD ADMIN PRODUCTS
+   ===================================================== */
+
+function loadAdminProducts() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "varnamAdminProducts"
+            );
+
+
+
+        /* -----------------------------------------
+           If admin storage does not exist,
+           keep the original 20 products.
+        ----------------------------------------- */
+
+        if (!saved) {
+            return;
+        }
+
+
+        const adminProducts =
+            JSON.parse(saved);
+
+
+        if (
+            !Array.isArray(
+                adminProducts
+            )
+        ) {
+            return;
+        }
+
+
+        /* -----------------------------------------
+           IMPORTANT:
+           Admin storage is now the main product list.
+           
+           This means:
+           - Deleted admin product stays deleted
+           - New admin product appears
+           - Edited admin product appears
+        ----------------------------------------- */
+
+        products.length = 0;
+
+
+        adminProducts.forEach(
+            function(adminProduct) {
+
+                products.push({
+
+                    id:
+                        adminProduct.id,
+
+                    name:
+                        adminProduct.name,
+
+                    type:
+                        adminProduct.category ||
+                        "Sarees",
+
+                    price:
+                        Number(
+                            adminProduct.price
+                        ),
+
+                    image:
+                        adminProduct.image,
+
+                    description:
+                        adminProduct.description ||
+                        "",
+
+                    badge:
+                        adminProduct.isNewArrival
+                            ? "New"
+                            : adminProduct.isBestSelling
+                                ? "Best Selling"
+                                : "",
+
+                    createdAt:
+                        adminProduct.createdAt ||
+                        ""
+
+                });
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.log(
+            "Could not load admin products.",
+            error
+        );
+
+    }
+
+}
+
+
+loadAdminProducts();
+
+
+async function loadProductsFromAPI() {
+
+    try {
+
+        const response = await fetch(
+    "https://varnam-silks-backend-4.onrender.com/api/products"
+);
+
+        if (!response.ok) {
+            throw new Error("Failed to load products");
+        }
+
+        const data = await response.json();
+      data.sort(function(a, b) {
+    return Number(b.id) - Number(a.id);
+});
+
+        products = data.map(function(product) {
+
+            return {
+                id: product.id,
+                name: product.name,
+                type: product.type || "Sarees",
+                price: Number(product.price) || 0,
+                image: product.image || "",
+                badge: ""
+            };
+
+        });
+
+        console.log(
+            "MongoDB products loaded:",
+            products.length
+        );
+
+        displayProducts();
+
+    } catch (error) {
+
+        console.error(
+            "MongoDB product loading failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   VARIABLES
+   ===================================================== */
+
+let visibleProducts = 10;
+
+let currentCategory = "All";
+
+let searchText = "";
+
+// =========================
+// CART STORAGE
+// =========================
+
+let cart = [];
+
+const API_URL = "https://varnam-silks-backend-4.onrender.com";
+const CUSTOMER_TOKEN_KEY = "varnamCustomerToken";
+
+function getCustomerToken() {
+    return localStorage.getItem(CUSTOMER_TOKEN_KEY);
+}
+
+
+// =========================
+// GUEST CART STORAGE
+// =========================
+
+function saveCartToStorage() {
+    localStorage.setItem(
+        "varnamCart",
+        JSON.stringify(cart)
+    );
+}
+
+
+function loadCartFromStorage() {
+
+    try {
+
+        const savedCart =
+            localStorage.getItem("varnamCart");
+
+        if (!savedCart) {
+            cart = [];
+            return;
+        }
+
+        const parsedCart = JSON.parse(savedCart);
+
+        cart = Array.isArray(parsedCart)
+            ? parsedCart
+            : [];
+
+    } catch (error) {
+
+        console.error(
+            "Local cart loading failed:",
+            error
+        );
+
+        cart = [];
+    }
+}
+
+
+// =========================
+// LOAD CUSTOMER CART
+// =========================
+
+async function loadCustomerCart() {
+
+    const token = getCustomerToken();
+
+    // Customer is not logged in
+    if (!token) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            API_URL + "/api/customer/cart",
+            {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load customer cart"
+            );
+        }
+
+        const data = await response.json();
+
+        cart = (data.cart || [])
+            .map(function(item) {
+
+                const product = products.find(
+                    function(p) {
+                        return String(p.id) ===
+                               String(item.productId);
+                    }
+                );
+
+                if (!product) {
+                    return null;
+                }
+
+                return {
+                    id: product.id,
+                    name: product.name,
+                    price: Number(product.price) || 0,
+                    image: product.image || "",
+                    quantity: Number(item.quantity) || 1
+                };
+
+            })
+            .filter(Boolean);
+
+        updateCart();
+
+        console.log(
+            "Customer cart loaded successfully"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Customer cart loading failed:",
+            error
+        );
+
+        loadCartFromStorage();
+        updateCart();
+    }
+}
+
+
+// =========================
+// SAVE CUSTOMER CART
+// =========================
+
+async function saveCustomerCart() {
+
+    const token = getCustomerToken();
+
+    // Guest user
+    if (!token) {
+        saveCartToStorage();
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            API_URL + "/api/customer/cart",
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
+
+                body: JSON.stringify({
+                    cart: cart.map(function(item) {
+                        return {
+                            productId: Number(item.id),
+                            quantity:
+                                Number(item.quantity) || 1
+                        };
+                    })
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to save customer cart"
+            );
+        }
+
+        console.log(
+            "Customer cart saved successfully"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Customer cart save failed:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   DOM ELEMENTS
+   ===================================================== */
+
+const productGrid =
+    document.getElementById(
+        "productGrid"
+    );
+
+
+const loadMoreBtn =
+    document.getElementById(
+        "loadMoreBtn"
+    );
+
+
+const searchBtn =
+    document.getElementById(
+        "searchBtn"
+    );
+
+
+const searchBox =
+    document.getElementById(
+        "searchBox"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+
+const menuBtn =
+    document.getElementById(
+        "menuBtn"
+    );
+
+
+const menuPanel =
+    document.getElementById(
+        "menuPanel"
+    );
+
+
+const closeMenu =
+    document.getElementById(
+        "closeMenu"
+    );
+
+
+const overlay =
+    document.getElementById(
+        "overlay"
+    );
+
+
+const cartBtn =
+    document.getElementById(
+        "cartBtn"
+    );
+
+
+const cartDrawer =
+    document.getElementById(
+        "cartDrawer"
+    );
+
+
+const closeCart =
+    document.getElementById(
+        "closeCart"
+    );
+
+
+const cartItems =
+    document.getElementById(
+        "cartItems"
+    );
+
+
+const cartCount =
+    document.getElementById(
+        "cartCount"
+    );
+
+
+const cartTotal =
+    document.getElementById(
+        "cartTotal"
+    );
+
+
+/* =====================================================
+   FORMAT PRICE
+   ===================================================== */
+
+function formatPrice(price) {
+
+    return (
+        "₹" +
+        Number(price)
+            .toLocaleString("en-IN")
+    );
+
+}
+
+
+/* =====================================================
+   GET FILTERED PRODUCTS
+   ===================================================== */
+
+function getFilteredProducts() {
+
+    return products.filter(
+        function(product) {
+
+
+            const categoryMatch =
+                currentCategory === "All" ||
+                product.type === currentCategory;
+
+
+            const searchMatch =
+                product.name
+                    .toLowerCase()
+                    .includes(
+                        searchText.toLowerCase()
+                    );
+
+
+            return (
+                categoryMatch &&
+                searchMatch
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DISPLAY PRODUCTS
+   ===================================================== */
+
+function displayProducts() {
+
+    const filteredProducts =
+        getFilteredProducts();
+
+
+    const productsToShow =
+        filteredProducts.slice(
+            0,
+            visibleProducts
+        );
+
+
+    productGrid.innerHTML = "";
+
+
+    if (
+        productsToShow.length === 0
+    ) {
+
+        productGrid.innerHTML = `
+
+            <div class="empty-cart">
+
+                No sarees found.
+
+            </div>
+
+        `;
+
+
+        loadMoreBtn.style.display =
+            "none";
+
+
+        return;
+
+    }
+
+
+    /* CREATE PRODUCT CARDS */
+
+    productsToShow.forEach(
+        function(product) {
+
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "product-card";
+
+
+            card.innerHTML = `
+
+                <div
+                    class="product-image-wrap"
+                >
+
+                    <img
+                        class="product-image"
+                        src="${product.image}"
+                        alt="${product.name}"
+                        loading="lazy"
+                    >
+
+
+                    ${
+                        product.badge
+                        ?
+                        `
+                        <span
+                            class="product-badge"
+                        >
+                            ${product.badge}
+                        </span>
+                        `
+                        :
+                        ""
+                    }
+
+                </div>
+
+
+                <div
+                    class="product-info"
+                >
+
+
+                    <h3
+                        class="product-name"
+                    >
+                        ${product.name}
+                    </h3>
+
+
+                    <p
+                        class="product-type"
+                    >
+                        ${product.type}
+                    </p>
+
+
+                    <div
+                        class="product-price-row"
+                    >
+
+
+                        <span
+                            class="product-price"
+                        >
+                            ${formatPrice(
+                                product.price
+                            )}
+                        </span>
+
+
+                        <button
+                            class="add-cart-btn"
+                            data-product-id="${String(product.id)}"
+                            aria-label="Add to cart"
+                            type="button"
+                        >
+                            +
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            productGrid.appendChild(
+                card
+            );
+
+
+            /* ==========================================
+               DIRECT ADD TO CART
+               ========================================== */
+
+            const addCartButton =
+                card.querySelector(
+                    ".add-cart-btn"
+                );
+
+
+            if (addCartButton) {
+
+                addCartButton.addEventListener(
+                    "click",
+                    function(event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        addToCart(
+                            product.id
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==========================================
+               OPEN PRODUCT DETAILS
+               ========================================== */
+
+            card.addEventListener(
+                "click",
+                function(event) {
+
+
+                    if (
+                        event.target.closest(
+                            ".add-cart-btn"
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    window.location.href =
+                        `product.html?id=${product.id}`;
+
+                }
+            );
+
+
+        }
+    );
+
+
+    /* LOAD MORE */
+
+    if (
+        visibleProducts <
+        filteredProducts.length
+    ) {
+
+        loadMoreBtn.style.display =
+            "block";
+
+    } else {
+
+        loadMoreBtn.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   ADD TO CART
+   ===================================================== */
+
+async function addToCart(productId) {
+
+    const product =
+        products.find(
+            function(item) {
+
+                return String(item.id) ===
+                       String(productId);
+
+            }
+        );
+
+
+    if (!product) {
+
+        console.log(
+            "Product not found:",
+            productId
+        );
+
+        return;
+    }
+
+
+    const existing =
+        cart.find(
+            function(item) {
+
+                return String(item.id) ===
+                       String(product.id);
+
+            }
+        );
+
+
+    if (existing) {
+
+        existing.quantity++;
+
+    } else {
+
+        cart.push({
+
+            id:
+                product.id,
+
+            name:
+                product.name,
+
+            price:
+                Number(product.price) || 0,
+
+            image:
+                product.image || "",
+
+            quantity:
+                1
+
+        });
+
+    }
+
+
+    // Save cart to customer account
+    // or localStorage for guest users
+    await saveCustomerCart();
+
+
+    updateCart();
+
+    openCart();
+
+}
+
+
+/* =====================================================
+   UPDATE CART
+   ===================================================== */
+
+function updateCart() {
+
+    cartItems.innerHTML = "";
+
+
+    if (
+        cart.length === 0
+    ) {
+
+        cartItems.innerHTML = `
+
+            <div class="empty-cart">
+
+                Your cart is empty.
+
+            </div>
+
+        `;
+
+
+        cartCount.textContent =
+            "0";
+
+
+        cartTotal.textContent =
+            "₹0";
+
+
+        return;
+
+    }
+
+
+    let totalItems = 0;
+
+    let totalPrice = 0;
+
+
+    cart.forEach(
+        function(item) {
+
+
+            totalItems +=
+                Number(
+                    item.quantity
+                ) || 0;
+
+
+            totalPrice +=
+                (
+                    Number(
+                        item.price
+                    ) || 0
+                ) *
+                (
+                    Number(
+                        item.quantity
+                    ) || 0
+                );
+
+
+            const cartItem =
+                document.createElement(
+                    "div"
+                );
+
+
+            cartItem.className =
+                "cart-item";
+
+
+            cartItem.innerHTML = `
+
+                <img
+                    class="cart-item-image"
+                    src="${item.image}"
+                    alt="${item.name}"
+                >
+
+
+                <div
+                    class="cart-item-details"
+                >
+
+                    <h4>
+                        ${item.name}
+                    </h4>
+
+
+                    <p>
+
+                        ${formatPrice(
+                            item.price
+                        )}
+
+                        ×
+
+                        ${item.quantity}
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="remove-cart-item"
+                    data-id="${item.id}"
+                    type="button"
+                >
+
+                    Remove
+
+                </button>
+
+            `;
+
+
+            cartItems.appendChild(
+                cartItem
+            );
+
+        }
+    );
+
+
+    cartCount.textContent =
+        totalItems;
+
+
+    cartTotal.textContent =
+        formatPrice(
+            totalPrice
+        );
+
+}
+
+
+/* =====================================================
+   REMOVE FROM CART
+   ===================================================== */
+
+async function removeFromCart(productId) {
+
+    cart =
+        cart.filter(
+            function(item) {
+
+                return String(item.id) !==
+                       String(productId);
+
+            }
+        );
+
+
+    // Save cart to customer account
+    // or localStorage for guest users
+    await saveCustomerCart();
+
+
+    updateCart();
+
+}
+
+
+/* =====================================================
+   OPEN CART
+   ===================================================== */
+
+function openCart() {
+
+    cartDrawer.classList.add(
+        "active"
+    );
+
+
+    overlay.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE CART
+   ===================================================== */
+
+function closeCartDrawer() {
+
+    cartDrawer.classList.remove(
+        "active"
+    );
+
+
+    overlay.classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   OPEN MENU
+   ===================================================== */
+
+function openMenu() {
+
+    menuPanel.classList.add(
+        "active"
+    );
+
+
+    overlay.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE MENU
+   ===================================================== */
+
+function closeMenuPanel() {
+
+    menuPanel.classList.remove(
+        "active"
+    );
+
+
+    overlay.classList.remove(
+        "active"
+    );
+
+}
+
+/* =====================================================
+   SEARCH BUTTON
+   ===================================================== */
+
+searchBtn.addEventListener(
+    "click",
+    function() {
+
+        searchBox.classList.toggle(
+            "active"
+        );
+
+
+        if (
+            searchBox.classList.contains(
+                "active"
+            )
+        ) {
+
+            searchInput.focus();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   SEARCH INPUT
+   ===================================================== */
+
+searchInput.addEventListener(
+    "input",
+    function(event) {
+
+        searchText =
+            event.target.value.trim();
+
+
+        visibleProducts =
+            10;
+
+
+        displayProducts();
+
+    }
+);
+
+
+/* =====================================================
+   MENU BUTTON
+   ===================================================== */
+
+
+
+
+/* =====================================================
+   CLOSE MENU
+   ===================================================== */
+
+closeMenu.addEventListener(
+    "click",
+    closeMenuPanel
+);
+
+
+/* =====================================================
+   CART BUTTON
+   ===================================================== */
+
+cartBtn.addEventListener(
+    "click",
+    openCart
+);
+
+
+/* =====================================================
+   CLOSE CART
+   ===================================================== */
+
+closeCart.addEventListener(
+    "click",
+    closeCartDrawer
+);
+
+
+/* =====================================================
+   OVERLAY
+   ===================================================== */
+
+overlay.addEventListener(
+    "click",
+    function() {
+
+        closeCartDrawer();
+
+        closeMenuPanel();
+
+    }
+);
+
+
+/* =====================================================
+   CATEGORY BUTTONS
+   ===================================================== */
+
+const categoryButtons =
+    document.querySelectorAll(
+        ".category-btn"
+    );
+
+
+categoryButtons.forEach(
+    function(button) {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+
+                categoryButtons.forEach(
+                    function(btn) {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                currentCategory =
+                    button.dataset.category;
+
+
+                visibleProducts =
+                    10;
+
+
+                displayProducts();
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   LOAD MORE
+   ===================================================== */
+
+loadMoreBtn.addEventListener(
+    "click",
+    function() {
+
+        visibleProducts +=
+            10;
+
+
+        displayProducts();
+
+    }
+);
+
+
+/* =====================================================
+   IMPORTANT:
+   NO PRODUCT-GRID CART LISTENER HERE
+   =====================================================
+
+   The + button is already connected
+   directly inside displayProducts().
+
+   Do NOT add another:
+
+   productGrid.addEventListener(...)
+
+   for add-to-cart.
+*/
+
+
+/* =====================================================
+   CART ITEMS
+   ===================================================== */
+
+cartItems.addEventListener(
+    "click",
+    function(event) {
+
+
+        const button =
+            event.target.closest(
+                ".remove-cart-item"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        const productId =
+            button.getAttribute(
+                "data-id"
+            );
+
+
+        removeFromCart(
+            productId
+        );
+
+    }
+);
+
+
+/* =====================================================
+   MENU LINKS
+   ===================================================== */
+
+const menuLinks =
+    menuPanel.querySelectorAll(
+        "a"
+    );
+
+
+menuLinks.forEach(
+    function(link) {
+
+        link.addEventListener(
+            "click",
+            function() {
+
+                closeMenuPanel();
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   CHECKOUT BUTTON
+   ===================================================== */
+
+const checkoutButton =
+    document.querySelector(
+        ".checkout-btn"
+    );
+
+
+if (checkoutButton) {
+
+    checkoutButton.addEventListener(
+        "click",
+        function() {
+
+
+            if (
+                cart.length === 0
+            ) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+
+                return;
+
+            }
+
+
+            window.location.href =
+                "checkout.html";
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   INITIAL LOAD
+   ===================================================== */
+
+async function initializeApp() {
+
+    // Load guest cart first
+    loadCartFromStorage();
+
+    updateCart();
+
+    // Load products from MongoDB
+    await loadProductsFromAPI();
+
+    // Load logged-in customer's cart
+    await loadCustomerCart();
+
+    updateCart();
+
+}
+
+initializeApp();
+
+/* =====================================================
+   ACCOUNT BUTTON
+   ===================================================== */
+
+const accountBtn =
+    document.getElementById(
+        "accountBtn"
+    );
+
+
+if (accountBtn) {
+
+    accountBtn.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "my-orders.html";
+
+        }
+    );
+
+}
