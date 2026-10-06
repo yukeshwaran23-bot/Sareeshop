@@ -742,6 +742,28 @@ body {
 
 }
 
+
+  .logout-btn {
+    display: block;
+    margin: 18px auto 0;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #D7A849;
+    color: #321039;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.logout-btn:active {
+    transform: scale(.97);
+}
+
+.logout-btn:active {
+    transform: scale(.97);
+}
+
 </style>
 
 </head>
@@ -793,6 +815,14 @@ body {
     <p>
         Track and view your Varnam Silks orders
     </p>
+
+    <button
+        class="logout-btn"
+        id="logoutButton"
+        type="button"
+    >
+        Logout
+    </button>
 
 </div>
 
@@ -1690,6 +1720,30 @@ function renderOrders(
 
 }
 
+
+/* ==========================================
+   LOGOUT
+   ========================================== */
+
+document
+    .getElementById("logoutButton")
+    .addEventListener(
+        "click",
+        function() {
+
+            localStorage.removeItem(
+                "varnamCustomerToken"
+            );
+
+            localStorage.removeItem(
+                "varnamCustomer"
+            );
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
 
 /* ==========================================
    BACK BUTTON
